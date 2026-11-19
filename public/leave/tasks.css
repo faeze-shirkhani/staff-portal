@@ -1,0 +1,14 @@
+.tabs a{flex:1;min-width:110px;padding:9px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;text-align:center;text-decoration:none}
+.tabs a.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.notice{border-color:var(--wa)}
+.notice b{color:var(--wa)}
+.redcard{border-color:var(--no)}
+.flagbox{margin-top:8px;border:1px solid var(--no);border-radius:10px;padding:8px 10px}
+.flagbox.done{border-color:var(--bd);opacity:.75}
+.flagbox>b{color:var(--no)}
+.flagbox.done>b{color:var(--mut)}
+.objbox{margin-top:8px;border:1px dashed var(--bd);border-radius:10px;padding:8px 10px}
+details>summary{cursor:pointer}
+summary.btn{display:inline-block;list-style:none}
+summary.btn::-webkit-details-marker{display:none}
+.inl{display:inline}

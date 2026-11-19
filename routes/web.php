@@ -11,11 +11,12 @@ Route::get('/', fn () => view('app'));
 Route::get('/login', fn () => redirect('/'))->name('login'); // کاربر وارد‌نشده به صفحه‌ی ورود می‌رود
 
 Route::middleware('auth')->prefix('tasks')->group(function () {
+    // تسک‌های خودِ کاربر
     Route::get('/', [TK::class, 'index']);
     Route::post('/', [TK::class, 'store']);
     Route::post('{id}/update', [TK::class, 'update'])->whereNumber('id');
-    Route::post('{id}/toggle', [TK::class, 'toggle'])->whereNumber('id');
     Route::post('{id}/delete', [TK::class, 'destroy'])->whereNumber('id');
+    Route::post('{id}/objection', [TK::class, 'objection'])->whereNumber('id');
 });
 
 Route::prefix('x')->group(function () {
