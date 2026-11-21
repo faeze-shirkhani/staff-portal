@@ -6,13 +6,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $t) {
-            $t->boolean('can_assign_tasks')->default(false);   // اجازه‌ی نوشتن تسک برای دیگران
-        });
-        Schema::table('tasks', function (Blueprint $t) {
-            $t->string('group_id', 36)->nullable()->index();    // تسکی که برای یک بخش یا همه نوشته شده
-        });
-        Schema::create('task_flags', function (Blueprint $t) {  // تذکر (قرمزشدن)
+        if (!Schema::hasColumn('users', 'can_assign_tasks')) {
+            Schema::table('users', function (Blueprint $t) {
+                $t->boolean('can_assign_tasks')->default(false);   // اجازه‌ی نوشتن تسک برای دیگران
+            });
+        }
+        if (!Schema::hasColumn('tasks', 'group_id')) {
+            Schema::table('tasks', function (Blueprint $t) {
+                $t->string('group_id', 36)->nullable()->index();    // تسکی که برای یک بخش یا همه نوشته شده
+            });
+        }
+        if (!Schema::hasTable('task_flags')) Schema::create('task_flags', function (Blueprint $t) {  // تذکر (قرمزشدن)
             $t->id();
             $t->unsignedBigInteger('task_id')->index();
             $t->unsignedBigInteger('flagged_by');
@@ -21,7 +25,7 @@ return new class extends Migration {
             $t->timestamp('resolved_at')->nullable();           // برداشتن تذکر؛ پاک نمی‌شود
             $t->unsignedBigInteger('resolved_by')->nullable();
         });
-        Schema::create('task_objections', function (Blueprint $t) {
+        if (!Schema::hasTable('task_objections')) Schema::create('task_objections', function (Blueprint $t) {
             $t->id();
             $t->unsignedBigInteger('task_id')->index();
             $t->unsignedBigInteger('user_id');

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\TaskAccess as A;
+use App\Support\TaskSync;
 use App\Support\TaskWeek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,7 @@ class TaskController extends Controller
     public function index()
     {
         $me = Auth::user();
+        TaskSync::forUser($me->id); // تسک‌های «همه/بخش» که بعد از ثبت‌نام این کاربر نوشته شده یا قبلاً نرسیده
         $tasks = DB::table('tasks as t')->leftJoin('users as a', 'a.id', '=', 't.created_by')
             ->where('t.user_id', $me->id)->whereNull('t.deleted_at')->orderByDesc('t.id')->get(['t.*', 'a.name as author']);
         [$flags, $objs] = A::attach($tasks->pluck('id')->all());

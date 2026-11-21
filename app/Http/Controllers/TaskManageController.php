@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Support\LeaveRules as R;
 use App\Support\TaskAccess as A;
+use App\Support\TaskSync;
 use App\Support\TaskWeek;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,11 +27,14 @@ class TaskManageController extends Controller
         $this->gate(); $me = Auth::user();
         $users = DB::table('users')->where('id', '!=', $me->id)
             ->when($me->role !== 'boss', fn ($q) => $q->where('role', '!=', 'boss'))->orderBy('name')->get(['id', 'name', 'section']);
-        $rows = DB::table('tasks as t')->join('users as u', 'u.id', '=', 't.user_id')
-            ->where('t.created_by', $me->id)->where('t.user_id', '!=', $me->id)->whereNull('t.deleted_at')
+        $templates = DB::table('task_groups')->where('created_by', $me->id)->whereNull('deleted_at')->orderByDesc('created_at')->get();
+        $counts = DB::table('tasks')->whereIn('group_id', $templates->pluck('id')->all())->whereNull('deleted_at')
+            ->groupBy('group_id')->selectRaw('group_id as gid, count(*) as c')->pluck('c', 'gid');
+        $singles = DB::table('tasks as t')->join('users as u', 'u.id', '=', 't.user_id')
+            ->where('t.created_by', $me->id)->where('t.user_id', '!=', $me->id)->whereNull('t.group_id')->whereNull('t.deleted_at')
             ->orderByDesc('t.id')->get(['t.*', 'u.name as uname']);
-        $groups = $rows->groupBy(fn ($r) => $r->group_id ?: 'one' . $r->id)->values();
-        return view('tasks.assign', ['users' => $users, 'groups' => $groups, 'sections' => R::SECTIONS]);
+        return view('tasks.assign', ['users' => $users, 'templates' => $templates, 'counts' => $counts,
+            'singles' => $singles, 'sections' => R::SECTIONS]);
     }
 
     public function assignStore(Request $r)
@@ -41,17 +45,20 @@ class TaskManageController extends Controller
         if (mb_strlen($title) < 2) return back()->with('err', 'عنوان تسک را بنویسید (حداقل ۲ حرف).');
         $q = DB::table('users')->where('id', '!=', $me->id);
         if ($me->role !== 'boss') $q->where('role', '!=', 'boss');
-        $target = (string)$r->input('target');
+        $target = (string)$r->input('target'); $scope = null; $sec = null;
         if ($target === 'user') $q->where('id', (int)$r->input('user_id'));
         elseif ($target === 'section') {
-            $sec = (string)$r->input('section');
+            $sec = (string)$r->input('section'); $scope = 'section';
             if (!isset(R::SECTIONS[$sec])) return back()->with('err', 'بخش را انتخاب کنید.');
             $q->where('section', $sec);
-        } elseif ($target !== 'all') return back()->with('err', 'مخاطب را انتخاب کنید.');
+        } elseif ($target === 'all') $scope = 'all';
+        else return back()->with('err', 'مخاطب را انتخاب کنید.');
         $ids = $q->pluck('id');
-        if ($ids->isEmpty()) return back()->with('err', 'کسی برای این انتخاب پیدا نشد.');
-        $gid = $ids->count() > 1 ? (string)Str::uuid() : null;
-        DB::transaction(function () use ($ids, $gid, $me, $title, $note) {
+        if (!$scope && $ids->isEmpty()) return back()->with('err', 'کسی برای این انتخاب پیدا نشد.');
+        $gid = $scope ? (string)Str::uuid() : null; // «همه» و «بخش» همیشه یک تعریف گروهی دارند تا به عضوهای بعدی هم برسند
+        DB::transaction(function () use ($ids, $gid, $scope, $sec, $me, $title, $note) {
+            if ($gid) DB::table('task_groups')->insert(['id' => $gid, 'created_by' => $me->id, 'scope' => $scope, 'section' => $sec,
+                'title' => $title, 'note' => $note !== '' ? $note : null, 'created_at' => now(), 'updated_at' => now()]);
             foreach ($ids as $uid) {
                 $id = DB::table('tasks')->insertGetId(['user_id' => $uid, 'created_by' => $me->id, 'title' => $title,
                     'note' => $note !== '' ? $note : null, 'week_start' => TaskWeek::start(), 'group_id' => $gid,
@@ -59,42 +66,66 @@ class TaskManageController extends Controller
                 A::log($id, 'created', 'نوشته‌شده برای دیگران');
             }
         });
-        return back()->with('msg', 'تسک برای ' . \App\Support\Fa::num($ids->count()) . ' نفر ثبت شد.');
+        $n = \App\Support\Fa::num($ids->count());
+        return back()->with('msg', $scope ? "تسک برای $n نفر ثبت شد و برای کسانی که بعداً در این گروه ثبت‌نام کنند هم می‌آید." : 'تسک ثبت شد.');
     }
 
-    /** ردیف‌های هم‌گروهِ یک تسکِ نوشته‌شده (یک نفر یا کل گروه) */
-    private function groupQuery($t)
-    {
-        $q = DB::table('tasks')->where('created_by', Auth::id())->whereNull('deleted_at');
-        return $t->group_id ? $q->where('group_id', $t->group_id) : $q->where('id', $t->id);
-    }
-
-    private function myWritten($id)
+    /** تسکِ تکی که خودم برای یک نفر نوشته‌ام */
+    private function mySingle($id)
     {
         $me = Auth::user();
-        $t = DB::table('tasks')->where('id', (int)$id)->whereNull('deleted_at')->first();
+        $t = DB::table('tasks')->where('id', (int)$id)->whereNull('deleted_at')->whereNull('group_id')->first();
         return ($t && $t->created_by == $me->id && $t->user_id != $me->id && A::canAssign($me)) ? $t : null;
+    }
+
+    private function myGroup($gid)
+    {
+        return A::canAssign(Auth::user())
+            ? DB::table('task_groups')->where('id', (string)$gid)->where('created_by', Auth::id())->whereNull('deleted_at')->first()
+            : null;
     }
 
     public function assignUpdate($id, Request $r)
     {
-        $t = $this->myWritten($id);
+        $t = $this->mySingle($id);
         if (!$t) return back()->with('err', 'این تسک قابل ویرایش نیست.');
         $title = A::clean($r->input('title'), 200);
         $note = A::clean($r->input('note'), 1000);
         if (mb_strlen($title) < 2) return back()->with('err', 'عنوان تسک را بنویسید (حداقل ۲ حرف).');
-        $this->groupQuery($t)->update(['title' => $title, 'note' => $note !== '' ? $note : null, 'updated_at' => now()]);
+        DB::table('tasks')->where('id', $t->id)->update(['title' => $title, 'note' => $note !== '' ? $note : null, 'updated_at' => now()]);
         A::log($t->id, 'edited', 'قبلاً: ' . $t->title);
         return back()->with('msg', 'تسک ویرایش شد.');
     }
 
     public function assignDestroy($id)
     {
-        $t = $this->myWritten($id);
+        $t = $this->mySingle($id);
         if (!$t) return back()->with('err', 'این تسک قابل حذف نیست.');
-        $this->groupQuery($t)->update(['deleted_at' => now(), 'updated_at' => now()]);
+        DB::table('tasks')->where('id', $t->id)->update(['deleted_at' => now(), 'updated_at' => now()]);
         A::log($t->id, 'deleted', $t->title);
         return back()->with('msg', 'تسک حذف شد.');
+    }
+
+    public function groupUpdate($gid, Request $r)
+    {
+        $g = $this->myGroup($gid);
+        if (!$g) return back()->with('err', 'این تسک قابل ویرایش نیست.');
+        $title = A::clean($r->input('title'), 200);
+        $note = A::clean($r->input('note'), 1000);
+        if (mb_strlen($title) < 2) return back()->with('err', 'عنوان تسک را بنویسید (حداقل ۲ حرف).');
+        $set = ['title' => $title, 'note' => $note !== '' ? $note : null, 'updated_at' => now()];
+        DB::table('task_groups')->where('id', $g->id)->update($set);
+        DB::table('tasks')->where('group_id', $g->id)->where('created_by', Auth::id())->whereNull('deleted_at')->update($set);
+        return back()->with('msg', 'تسک برای همه‌ی اعضا ویرایش شد.');
+    }
+
+    public function groupDestroy($gid)
+    {
+        $g = $this->myGroup($gid);
+        if (!$g) return back()->with('err', 'این تسک قابل حذف نیست.');
+        DB::table('task_groups')->where('id', $g->id)->update(['deleted_at' => now(), 'updated_at' => now()]);
+        DB::table('tasks')->where('group_id', $g->id)->where('created_by', Auth::id())->whereNull('deleted_at')->update(['deleted_at' => now(), 'updated_at' => now()]);
+        return back()->with('msg', 'تسک برای همه‌ی اعضا حذف شد.');
     }
 
     private function counts($me, string $kind)
@@ -109,6 +140,7 @@ class TaskManageController extends Controller
     public function team(Request $r)
     {
         $this->gate(); $me = Auth::user();
+        TaskSync::all();
         $q = DB::table('users as u')->where('u.id', '!=', $me->id)->where('u.role', '!=', 'boss');
         if ($me->role !== 'boss') {
             $q->whereIn('u.id', function ($s) use ($me) {
@@ -125,6 +157,7 @@ class TaskManageController extends Controller
     public function person($uid)
     {
         $this->gate(); $me = Auth::user();
+        TaskSync::all();
         $person = DB::table('users')->where('id', (int)$uid)->first();
         abort_if(!$person || $person->id == $me->id, 404);
         $q = DB::table('tasks as t')->leftJoin('users as a', 'a.id', '=', 't.created_by')

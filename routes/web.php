@@ -23,6 +23,8 @@ Route::middleware('auth')->prefix('tasks')->group(function () {
     Route::post('assign', [TM::class, 'assignStore']);
     Route::post('assign/{id}/update', [TM::class, 'assignUpdate'])->whereNumber('id');
     Route::post('assign/{id}/delete', [TM::class, 'assignDestroy'])->whereNumber('id');
+    Route::post('assign/group/{gid}/update', [TM::class, 'groupUpdate']);
+    Route::post('assign/group/{gid}/delete', [TM::class, 'groupDestroy']);
     Route::get('team', [TM::class, 'team']);
     Route::get('team/{uid}', [TM::class, 'person'])->whereNumber('uid');
     Route::post('{id}/flag', [TM::class, 'flag'])->whereNumber('id');
