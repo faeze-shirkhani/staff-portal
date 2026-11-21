@@ -6,6 +6,7 @@ use App\Http\Controllers\LeaveReportController as RR;
 use App\Http\Controllers\ReportController as P;
 use App\Http\Controllers\TaskController as TK;
 use App\Http\Controllers\TaskManageController as TM;
+use App\Http\Controllers\TaskReportController as TR;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('app'));
@@ -31,6 +32,9 @@ Route::middleware('auth')->prefix('tasks')->group(function () {
     Route::post('flag/{fid}/resolve', [TM::class, 'resolve'])->whereNumber('fid');
     Route::get('objections', [TM::class, 'objections']);
     Route::post('objection/{oid}/reply', [TM::class, 'reply'])->whereNumber('oid');
+    // گزارش ماهانه
+    Route::get('report', [TR::class, 'index']);
+    Route::get('report.xlsx', [TR::class, 'xlsx']);
 });
 
 Route::prefix('x')->group(function () {

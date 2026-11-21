@@ -25,6 +25,9 @@
       <a href="/tasks/team" class="{{ request()->is('tasks/team*') ? 'on' : '' }}">افراد و تذکر</a>
       <a href="/tasks/objections" class="{{ request()->is('tasks/objections') ? 'on' : '' }}">اعتراض‌ها@if ($pendingObj) ({{ Fa::num($pendingObj) }})@endif</a>
     @endif
+    @if (TaskAccess::canReport($u))
+      <a href="/tasks/report" class="{{ request()->is('tasks/report') ? 'on' : '' }}">گزارش تسک</a>
+    @endif
   </div>
   @include('tasks.notice')
   @if (session('msg'))<div class="card okm">{{ session('msg') }}</div>@endif
