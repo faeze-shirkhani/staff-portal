@@ -5,6 +5,7 @@ use App\Http\Controllers\LeaveController as L;
 use App\Http\Controllers\LeaveReportController as RR;
 use App\Http\Controllers\ReportController as P;
 use App\Http\Controllers\TaskController as TK;
+use App\Http\Controllers\TaskManageController as TM;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('app'));
@@ -17,6 +18,17 @@ Route::middleware('auth')->prefix('tasks')->group(function () {
     Route::post('{id}/update', [TK::class, 'update'])->whereNumber('id');
     Route::post('{id}/delete', [TK::class, 'destroy'])->whereNumber('id');
     Route::post('{id}/objection', [TK::class, 'objection'])->whereNumber('id');
+    // نوشتن تسک برای دیگران، تذکر و پاسخ به اعتراض (مدیر و کسانی که اجازه دارند)
+    Route::get('assign', [TM::class, 'assignForm']);
+    Route::post('assign', [TM::class, 'assignStore']);
+    Route::post('assign/{id}/update', [TM::class, 'assignUpdate'])->whereNumber('id');
+    Route::post('assign/{id}/delete', [TM::class, 'assignDestroy'])->whereNumber('id');
+    Route::get('team', [TM::class, 'team']);
+    Route::get('team/{uid}', [TM::class, 'person'])->whereNumber('uid');
+    Route::post('{id}/flag', [TM::class, 'flag'])->whereNumber('id');
+    Route::post('flag/{fid}/resolve', [TM::class, 'resolve'])->whereNumber('fid');
+    Route::get('objections', [TM::class, 'objections']);
+    Route::post('objection/{oid}/reply', [TM::class, 'reply'])->whereNumber('oid');
 });
 
 Route::prefix('x')->group(function () {
