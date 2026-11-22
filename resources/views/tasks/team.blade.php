@@ -1,6 +1,7 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
-@section('content')
+@section('title', 'افراد و تذکر')
+@section('body')
 <form method="get" action="/tasks/team" class="card">
   <label>جست‌وجوی نام</label>
   <input name="q" value="{{ $q }}" placeholder="نام یا نام خانوادگی">

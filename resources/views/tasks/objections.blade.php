@@ -1,6 +1,7 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
-@section('content')
+@section('title', 'اعتراض‌ها')
+@section('body')
 @forelse ($rows as $o)
   <div class="card">
     <b>{{ $o->uname }}</b> <span class="sm">· تسک: {{ $o->title }}</span>

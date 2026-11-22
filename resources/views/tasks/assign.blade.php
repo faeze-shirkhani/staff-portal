@@ -1,6 +1,7 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
-@section('content')
+@section('title', 'نوشتن تسک')
+@section('body')
 <form method="post" action="/tasks/assign" class="card">
   @csrf
   <b>نوشتن تسک برای دیگران</b>

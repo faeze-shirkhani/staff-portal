@@ -8,7 +8,7 @@ async function api(path, opt = {}) {
   const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) || [])[1] || "");
   const r = await fetch(path, Object.assign({}, opt, {headers: Object.assign({"Content-Type": "application/json", "Accept": "application/json", "X-XSRF-TOKEN": xsrf}, opt.headers || {})}));
   const j = await r.json().catch(() => ({}));
-  if (r.status === 401 && me && path !== "/x/me") { me = null; render(); throw new Error("نشست منقضی شد؛ دوباره وارد شوید."); }
+  if (r.status === 401 && me && path !== "/x/me") { me = null; location.reload(); throw new Error("نشست منقضی شد؛ دوباره وارد شوید."); }
   if (!r.ok) throw new Error(j.message || "خطا");
   return j;
 }

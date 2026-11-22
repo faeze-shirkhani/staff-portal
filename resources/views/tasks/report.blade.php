@@ -1,6 +1,7 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
-@section('content')
+@section('title', 'گزارش تسک')
+@section('body')
 @php($qs = http_build_query(['jy' => $jy, 'jm' => $jm, 'section' => $section, 'q' => $q]))
 <form method="get" action="/tasks/report" class="card noprint">
   <div class="row">

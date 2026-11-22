@@ -21,7 +21,7 @@ function authView() {
           if (password !== $("#pw2").value) throw new Error("رمز و تکرار آن یکسان نیست.");
         }
         const r = await post(reg ? "/x/register" : "/x/login", {first, last, password, section});
-        me = r.record; tab = ""; render();
+        me = r.record; location.reload();
       } catch (e) { $("#msg").textContent = e.message || "خطای ناشناخته"; }
     };
     const run = () => { const b = $("#go"); if (!b.disabled) withBusy(b, go); };

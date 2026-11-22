@@ -1,6 +1,7 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
-@section('content')
+@section('title', 'تسک‌های فرد')
+@section('body')
 <div class="card">
   <b>{{ $person->name }}</b> <span class="sm">{{ $sections[$person->section] ?? '' }}</span>
   <div><a href="/tasks/team">‹ فهرست افراد</a></div>

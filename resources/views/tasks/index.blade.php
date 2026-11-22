@@ -1,6 +1,7 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
-@section('content')
+@section('title', 'تسک‌های من')
+@section('body')
 <form method="post" action="/tasks" class="card">
   @csrf
   <label>تسک جدید برای خودم</label>
