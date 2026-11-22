@@ -11,8 +11,9 @@ function render() {
   if (!me) { authView(); return; }
   const tabs = tabsFor();
   if (!tabs.find(t => t[0] === tab)) tab = tabs[0][0];
-  $("#app").innerHTML = `<div class="top"><h1>📅 ${esc(me.fullname)} <span class="sm">(${ROLES[me.role]}${me.section ? " · " + SECTIONS[me.section] : ""})</span></h1><button class="btn gh" id="lo">خروج</button></div>
-  <div class="tabs">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${l}</button>`).join("")}<button data-href="/tasks">تسک‌های هفته</button></div><div id="body"></div>`;
+  $("#app").innerHTML = `<div class="top"><h1>${esc(me.fullname)} <span class="sm">(${ROLES[me.role]}${me.section ? " · " + SECTIONS[me.section] : ""})</span></h1><button class="btn gh" id="lo">خروج</button></div>
+  <div class="mainnav"><a class="on" href="/">📅 مرخصی</a><a href="/tasks">✅ تسک‌ها</a></div>
+  <div class="tabs">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === tab ? "on" : ""}">${l}</button>`).join("")}</div><div id="body"></div>`;
   $("#lo").onclick = async () => { try { await api("/x/logout"); } catch (e) {} me = null; render(); };
   document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { if (b.dataset.href) { location.href = b.dataset.href; return; } tab = b.dataset.t; render(); });
   ({req: requestView, queue: queueView, report: reportView, range: rangeView, admin: adminView})[tab]()

@@ -11,4 +11,8 @@
 .lrow{display:flex;justify-content:space-between;gap:8px;padding:7px 12px;border-top:1px solid var(--bd);font-size:14px}
 .lrow .sm{white-space:nowrap}
 .rfoot{padding:6px 14px 14px;font-size:12px;color:var(--mut);text-align:center}
-@media print{.noprint,.tabs,.top{display:none!important}body{background:#fff}.rep{border:0;margin:0}}
+/* ناوبری اصلی بین «مرخصی» و «تسک‌ها» */
+.mainnav{display:flex;gap:8px;margin:10px 0}
+.mainnav a{flex:1;padding:12px 8px;text-align:center;font-weight:700;font-size:16px;border:2px solid var(--bd);border-radius:14px;background:var(--card);color:var(--tx);text-decoration:none}
+.mainnav a.on{background:var(--pri);border-color:var(--pri);color:#fff;box-shadow:0 2px 8px #0003}
+@media print{.noprint,.tabs,.top,.mainnav{display:none!important}body{background:#fff}.rep{border:0;margin:0}}
