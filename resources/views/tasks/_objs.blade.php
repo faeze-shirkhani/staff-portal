@@ -1,6 +1,6 @@
 @use('App\Support\Fa')
 @foreach ($ob as $o)
-  <div class="objbox">
+  <div class="objbox {{ $o->reply ? 'answered' : '' }}">
     <b>اعتراض:</b> {!! nl2br(e($o->body)) !!}
     <div class="sm">{{ Fa::dt($o->created_at) }}</div>
     @if ($o->reply)

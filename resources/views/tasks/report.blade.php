@@ -1,15 +1,14 @@
 @extends('tasks.layout')
 @use('App\Support\Fa')
 @section('title', 'گزارش تسک')
+@section('nonotice', '1')
 @section('body')
 @php($qs = http_build_query(['jy' => $jy, 'jm' => $jm, 'section' => $section, 'q' => $q]))
 <form method="get" action="/tasks/report" class="card noprint">
-  <div class="row">
+  <div class="fl3">
     <div><label>ماه</label>
       <select name="jm">@foreach (Fa::MONTHS as $i => $mn)<option value="{{ $i + 1 }}" @selected($jm == $i + 1)>{{ $mn }}</option>@endforeach</select></div>
     <div><label>سال</label><input name="jy" type="number" value="{{ $jy }}"></div>
-  </div>
-  <div class="row">
     <div><label>بخش</label>
       <select name="section"><option value="">همه بخش‌ها</option>@foreach ($sections as $k => $v)<option value="{{ $k }}" @selected($section === $k)>{{ $v }}</option>@endforeach</select></div>
     <div><label>جست‌وجوی نام</label><input name="q" value="{{ $q }}"></div>
@@ -27,19 +26,20 @@
     <div class="rs">{{ Fa::MONTHS[$jm - 1] }} {{ Fa::num($jy) }}@if ($section) · بخش {{ $sections[$section] }}@endif</div>
   </div>
   <div class="chips">
-    <div class="chip"><b>{{ Fa::num(count($people)) }}</b><span>نفر دارای تذکر</span></div>
-    <div class="chip"><b>{{ Fa::num($flags) }}</b><span>تعداد تذکر</span></div>
-    <div class="chip"><b>{{ Fa::num($open) }}</b><span>هنوز باز در پایان ماه</span></div>
+    <div class="chip2"><span class="ci">👥</span><div><b>{{ Fa::num(count($people)) }}</b><span class="l">نفر دارای تذکر</span></div></div>
+    <div class="chip2"><span class="ci">🚩</span><div><b>{{ Fa::num($flags) }}</b><span class="l">تعداد تذکر</span></div></div>
+    <div class="chip2"><span class="ci">⏳</span><div><b>{{ Fa::num($open) }}</b><span class="l">هنوز باز در پایان ماه</span></div></div>
   </div>
   @forelse ($people as $p)
     <div class="pcard">
       <div class="ph">
+        <span class="tav sm">{{ mb_substr($p['name'], 0, 1) }}</span>
         <div><b>{{ $p['name'] }}</b> <span class="sm">{{ $sections[$p['section']] ?? '' }}</span></div>
-        <div class="pt">{{ $p['open'] ? Fa::num($p['open']) . ' باز' : 'همه رفع شد' }}</div>
+        <span class="pill {{ $p['open'] ? 'red' : 'ok' }}">{{ $p['open'] ? Fa::num($p['open']) . ' تذکر باز' : 'همه رفع شد' }}</span>
       </div>
       @foreach ($p['flags'] as $f)
         <div class="lrow" style="flex-direction:column;gap:2px">
-          <div><b>{{ $f['title'] }}</b> <span class="b {{ $f['open'] ? 'no-t' : 'ok-t' }}">{{ $f['open'] ? 'هنوز باز' : 'رفع شد' }}</span></div>
+          <div><b>{{ $f['title'] }}</b> <span class="pill {{ $f['open'] ? 'redo' : 'ok' }}">{{ $f['open'] ? 'هنوز باز' : 'رفع شد' }}</span></div>
           <div class="sm">{!! nl2br(e($f['note'])) !!}</div>
           <div class="sm">{{ $f['by'] }} · {{ Fa::dt($f['at']) }}@if ($f['resolved_at']) · رفع: {{ Fa::dt($f['resolved_at']) }}@endif</div>
         </div>

@@ -30,4 +30,11 @@
   .nav-open .scrim{display:block;position:fixed;top:0;right:0;bottom:0;left:0;background:#0006;z-index:19}
   .page{padding:12px}
 }
-@media print{.side,.topbar,.scrim{display:none!important}.shell,.main{display:block}.page{padding:0;max-width:none}}
+@media print{.side,.topbar,.scrim,.notice{display:none!important}.shell,.main{display:block}.page{padding:0;max-width:none}}
+
+/* فونت یکدست برای همه‌ی فیلدها و دکمه‌ها */
+button,input,select,textarea{font-family:inherit}
+/* دکمه‌های کوچک‌تر */
+.btn{padding:7px 14px;font-size:13px;border-radius:10px;margin-top:8px}
+.btn+.btn{margin-inline-start:6px}
+input,select,textarea{padding:8px 10px;font-size:14px}
