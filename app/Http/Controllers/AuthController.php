@@ -44,9 +44,11 @@ class AuthController extends Controller
     }
 
     public function logout(Request $r)
-    {
-        Auth::logout();
-        $r->session()->regenerate();
-        return response()->json(['ok' => 1]);
-    }
+{
+    Auth::logout();
+    $r->session()->invalidate();
+    $r->session()->regenerateToken();
+    if ($r->expectsJson()) return response()->json(['ok' => 1]);
+    return redirect('/');
+}
 }

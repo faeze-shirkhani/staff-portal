@@ -1,11 +1,16 @@
 @use('App\Support\Fa')
+
 @php($fl = $flags->get($t->id, collect()))
 @php($ob = $objs->get($t->id, collect()))
+@php($more = $fl->count() + $ob->count())
 @php($open = $fl->whereNull('resolved_at')->first())
 @php($unrep = $ob->whereNull('reply')->count())
 @php($red = $open || $unrep)
 @php($own = $t->created_by == $t->user_id)
-<div class="trow {{ $red ? 'red' : '' }}" data-q="{{ $t->title }} {{ $t->note }}">
+
+<div class="trow {{ $red ? 'red' : '' }} {{ $more ? 'has-flags' : '' }}" data-id="{{ $t->id }}" data-q="{{ $t->title }} {{ $t->note }}"
+     @if ($more) data-tip="برای دیدن تذکرها و اعتراض‌ها کلیک کنید · {{ Fa::num($more) }} مورد" @endif>
+     
   <input type="checkbox" class="tg c-a" id="a{{ $t->id }}" hidden>
   <input type="checkbox" class="tg c-e" id="e{{ $t->id }}" hidden>
   <input type="checkbox" class="tg c-o" id="o{{ $t->id }}" hidden>
@@ -34,7 +39,11 @@
     <summary class="dots" aria-label="عملیات">⋯</summary>
     <div class="ddmenu">
       @if ($mode === 'mine')
-        <label for="a{{ $t->id }}">اعتراض یا توضیح</label>
+        @if ($own)
+  <span class="dis" title="این تسک را خودتان نوشته‌اید؛ اعتراض ندارد">اعتراض یا توضیح</span>
+@else
+  <label for="a{{ $t->id }}">اعتراض یا توضیح</label>
+@endif
         @if ($ob->count())<label for="o{{ $t->id }}">دیدن اعتراض‌ها ({{ Fa::num($ob->count()) }})</label>@endif
         @if ($own)
           <label for="e{{ $t->id }}">ویرایش</label>
@@ -53,25 +62,46 @@
     </div>
   </details>
 
-  @if ($fl->count())<div class="tflags">@include('tasks._flags', ['fl' => $fl])</div>@endif
-  @if ($ob->count())<div class="tpanel p-o">@include('tasks._objs', ['ob' => $ob, 'manage' => $mode === 'manage'])</div>@endif
+ @if ($fl->count())
+  <div class="tflags">
+    @include('tasks._flags', ['fl' => $fl, 'manage' => $mode === 'manage'])
+  </div>
+@endif
+
+@if ($ob->count())
+  <div class="tpanel p-o">
+    @include('tasks._objs', ['ob' => $ob, 'manage' => $mode === 'manage'])
+  </div>
+@endif
+
+@if (!($mode === 'mine' && $own))
   <div class="tpanel p-a">
+    <label for="a{{ $t->id }}" class="xbtn" title="انصراف" aria-label="انصراف">✕</label>
+
     @if ($mode === 'mine')
       <form method="post" action="/tasks/{{ $t->id }}/objection">
         @csrf
-        <label>اگر نسبت به این تسک اعتراضی دارید، توضیح خود را بنویسید؛ بررسی خواهد شد.</label>
+        <label>
+          اگر نسبت به این تسک اعتراضی دارید، توضیح خود را بنویسید؛
+          این اعتراض برای {{ $own ? 'مدیر' : $t->author . ' و مدیر' }} ارسال می‌شود.
+        </label>
+
         <textarea name="body" rows="3" maxlength="1000" required></textarea>
+
         <button class="btn">ثبت اعتراض</button>
       </form>
     @else
       <form method="post" action="/tasks/{{ $t->id }}/flag">
         @csrf
         <label>توضیح تذکر (مثلاً: دیر می‌آیی)</label>
+
         <textarea name="note" rows="3" maxlength="1000" required></textarea>
+
         <button class="btn no">ثبت تذکر</button>
       </form>
     @endif
   </div>
+@endif
   @if ($mode === 'mine' && $own)
     <div class="tpanel p-e">
       <form method="post" action="/tasks/{{ $t->id }}/update">

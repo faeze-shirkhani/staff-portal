@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('app'));
 Route::get('/login', fn () => redirect('/'))->name('login'); // کاربر وارد‌نشده به صفحه‌ی ورود می‌رود
+Route::post('/logout', [U::class, 'logout']);
 
 Route::middleware('auth')->prefix('tasks')->group(function () {
     // تسک‌های خودِ کاربر
@@ -18,6 +19,7 @@ Route::middleware('auth')->prefix('tasks')->group(function () {
     Route::post('/', [TK::class, 'store']);
     Route::post('{id}/update', [TK::class, 'update'])->whereNumber('id');
     Route::post('{id}/delete', [TK::class, 'destroy'])->whereNumber('id');
+    Route::post('{id}/restore', [TK::class, 'restore'])->whereNumber('id');
     Route::post('{id}/objection', [TK::class, 'objection'])->whereNumber('id');
     // نوشتن تسک برای دیگران، تذکر و پاسخ به اعتراض (مدیر و کسانی که اجازه دارند)
     Route::get('assign', [TM::class, 'assignForm']);

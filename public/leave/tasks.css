@@ -41,6 +41,7 @@ details>summary{cursor:pointer}
 .ddmenu{position:absolute;left:0;top:calc(100% + 4px);z-index:8;min-width:200px;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 28px #0005;padding:6px}
 .ddmenu form{margin:0}
 .ddmenu label,.ddmenu button{display:block;width:100%;text-align:right;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;font-size:14px;color:var(--tx);cursor:pointer}
+.ddmenu .dis{display:block;padding:9px 12px;font-size:14px;color:var(--mut);opacity:.5;cursor:not-allowed}
 .ddmenu label:hover,.ddmenu button:hover{background:var(--bg)}
 .ddmenu .danger{color:var(--no)}
 
@@ -51,6 +52,27 @@ details>summary{cursor:pointer}
 .flagbox.done{border-color:var(--bd);opacity:.8}
 .flagbox>b{color:var(--no)}
 .flagbox.done>b{color:var(--mut)}
+/* تذکرها: پیش‌فرض بسته، با کلیک روی ردیف باز می‌شوند */
+.tflags{display:none}
+.trow.open-flags .tflags{display:block}
+.trow.open-flags .p-o{display:block}
+.tpanel{position:relative}
+.xbtn{position:absolute;top:6px;left:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;color:var(--mut);cursor:pointer;font-size:14px;padding:0;width:28px}
+.xbtn:hover{background:var(--bg);color:var(--no)}
+.trow.has-flags{position:relative;cursor:pointer}
+.trow.has-flags .ttitle::after{content:" ▾";color:var(--mut);font-size:12px}
+.trow.open-flags .ttitle::after{content:" ▴"}
+.fhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fhead form{margin:0}
+
+/* Tooltip */
+.trow.has-flags::after{content:attr(data-tip);position:absolute;top:4px;left:50%;transform:translateX(-50%);
+  background:#000c;color:#fff;font-size:12px;padding:4px 10px;border-radius:8px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
+.trow.has-flags:hover::after{opacity:1;transition-delay:.5s}
+.trow.open-flags::after{content:"برای بستن کلیک کنید"}
+.trow.has-flags:has(.dd[open])::after,.trow.has-flags:has(.tflags:hover)::after{opacity:0}
 .objbox{margin-top:6px;border:1px solid var(--no);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.8}
 .objbox.answered{border-color:var(--bd)}
 .addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -66,4 +88,5 @@ details>summary{cursor:pointer}
   .tstatus,.tdate{display:none}
   .tdate-m{display:inline}
   .stat-m{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .trow.has-flags::after{display:none}
 }
