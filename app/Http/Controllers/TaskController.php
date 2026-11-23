@@ -23,7 +23,9 @@ class TaskController extends Controller
         $tasks = DB::table('tasks as t')->leftJoin('users as a', 'a.id', '=', 't.created_by')
             ->where('t.user_id', $me->id)->whereNull('t.deleted_at')->orderByDesc('t.id')->get(['t.*', 'a.name as author']);
         [$flags, $objs] = A::attach($tasks->pluck('id')->all());
-        return view('tasks.index', compact('tasks', 'flags', 'objs'));
+        $inactive = DB::table('tasks')->where('user_id', $me->id)->where('created_by', $me->id)->whereNotNull('deleted_at')
+            ->orderByDesc('id')->limit(50)->get();
+        return view('tasks.index', compact('tasks', 'flags', 'objs', 'inactive'));
     }
 
     public function store(Request $r)
@@ -52,11 +54,20 @@ class TaskController extends Controller
     public function destroy($id)
     {
         $t = $this->mine($id);
-        if (!$t || $t->created_by != Auth::id()) return back()->with('err', 'این تسک قابل حذف نیست.');
-        if (DB::table('task_flags')->where('task_id', $t->id)->exists()) return back()->with('err', 'این تسک تذکر دارد و حذف نمی‌شود.');
+        if (!$t || $t->created_by != Auth::id()) return back()->with('err', 'این تسک قابل غیرفعال‌کردن نیست.');
+        if (DB::table('task_flags')->where('task_id', $t->id)->exists()) return back()->with('err', 'این تسک تذکر دارد و غیرفعال نمی‌شود.');
         DB::table('tasks')->where('id', $t->id)->update(['deleted_at' => now(), 'updated_at' => now()]); // پنهان می‌شود، پاک نمی‌شود
         A::log($t->id, 'deleted', $t->title);
-        return back()->with('msg', 'تسک حذف شد.');
+        return back()->with('msg', 'تسک غیرفعال شد. از پایین همین صفحه می‌توانید دوباره فعالش کنید.');
+    }
+
+    public function restore($id)
+    {
+        $t = DB::table('tasks')->where('id', (int)$id)->where('user_id', Auth::id())->where('created_by', Auth::id())->whereNotNull('deleted_at')->first();
+        if (!$t) return back()->with('err', 'این تسک پیدا نشد.');
+        DB::table('tasks')->where('id', $t->id)->update(['deleted_at' => null, 'updated_at' => now()]);
+        A::log($t->id, 'restored', $t->title);
+        return back()->with('msg', 'تسک دوباره فعال شد.');
     }
 
     public function objection($id, Request $r)

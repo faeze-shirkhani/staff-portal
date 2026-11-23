@@ -9,31 +9,50 @@
   <input type="checkbox" class="tg c-a" id="a{{ $t->id }}" hidden>
   <input type="checkbox" class="tg c-e" id="e{{ $t->id }}" hidden>
   <input type="checkbox" class="tg c-o" id="o{{ $t->id }}" hidden>
+
   <div class="tav">{{ mb_substr($t->title, 0, 1) }}</div>
+
   <div class="tmain">
-    <div class="ttitle">{{ $t->title }}
-      @if ($open)<span class="pill red">تذکر</span>@endif
+    <div class="ttitle">{{ $t->title }}</div>
+    <div class="tmeta">@if (!$own)نوشته‌ی {{ $t->author }}@else نوشته‌ی خودم@endif<span class="tdate-m"> · {{ Fa::dt($t->created_at) }}</span></div>
+    @if ($t->note)<div class="tnote">{!! nl2br(e($t->note)) !!}</div>@endif
+    <div class="stat-m">
+      @if ($open)<span class="pill red">تذکر باز</span>@endif
       @if ($unrep)<span class="pill redo">اعتراض</span>@elseif ($ob->count())<span class="pill ok">پاسخ داده شد</span>@endif
     </div>
-    <div class="tmeta">@if (!$own)نوشته‌ی {{ $t->author }} · @endif{{ Fa::dt($t->created_at) }}</div>
-    @if ($t->note)<div class="tnote">{!! nl2br(e($t->note)) !!}</div>@endif
   </div>
-  <div class="tact">
-    @if ($ob->count())<label class="sbtn {{ $unrep ? 'red' : '' }}" for="o{{ $t->id }}">اعتراض‌ها ({{ Fa::num($ob->count()) }})</label>@endif
-    @if ($mode === 'mine')
-      <label class="sbtn" for="a{{ $t->id }}">اعتراض</label>
-      @if ($own)
-        <label class="sbtn" for="e{{ $t->id }}">ویرایش</label>
-        @if ($fl->isEmpty())
-          <form method="post" action="/tasks/{{ $t->id }}/delete" onsubmit="return confirm('این تسک حذف شود؟')">@csrf<button class="sbtn red">حذف</button></form>
+
+  <div class="tstatus">
+    @if ($open)<span class="pill red">تذکر باز</span>@endif
+    @if ($unrep)<span class="pill redo">اعتراض</span>@elseif ($ob->count())<span class="pill ok">پاسخ داده شد</span>@endif
+    @if (!$open && !$ob->count())<span class="pill neutral">عادی</span>@endif
+  </div>
+
+  <div class="tdate">{{ Fa::date(substr($t->created_at, 0, 10)) }}<small>ساعت {{ Fa::num(\Carbon\Carbon::parse($t->created_at, config('app.timezone'))->setTimezone('Asia/Tehran')->format('H:i')) }}</small></div>
+
+  <details class="dd">
+    <summary class="dots" aria-label="عملیات">⋯</summary>
+    <div class="ddmenu">
+      @if ($mode === 'mine')
+        <label for="a{{ $t->id }}">اعتراض یا توضیح</label>
+        @if ($ob->count())<label for="o{{ $t->id }}">دیدن اعتراض‌ها ({{ Fa::num($ob->count()) }})</label>@endif
+        @if ($own)
+          <label for="e{{ $t->id }}">ویرایش</label>
+          @if ($fl->isEmpty())
+            <form method="post" action="/tasks/{{ $t->id }}/delete" onsubmit="return confirm('این تسک غیرفعال شود؟')">@csrf<button class="danger">غیرفعال کردن</button></form>
+          @endif
+        @endif
+      @else
+        @if ($ob->count())<label for="o{{ $t->id }}">اعتراض‌ها و پاسخ ({{ Fa::num($ob->count()) }})</label>@endif
+        @if ($open)
+          <form method="post" action="/tasks/flag/{{ $open->id }}/resolve" onsubmit="return confirm('تذکر برداشته شود؟')">@csrf<button>رفع تذکر</button></form>
+        @else
+          <label for="a{{ $t->id }}" class="danger">تذکر دادن</label>
         @endif
       @endif
-    @elseif ($open)
-      <form method="post" action="/tasks/flag/{{ $open->id }}/resolve" onsubmit="return confirm('تذکر برداشته شود؟')">@csrf<button class="sbtn ok">رفع تذکر</button></form>
-    @else
-      <label class="sbtn red" for="a{{ $t->id }}">تذکر</label>
-    @endif
-  </div>
+    </div>
+  </details>
+
   @if ($fl->count())<div class="tflags">@include('tasks._flags', ['fl' => $fl])</div>@endif
   @if ($ob->count())<div class="tpanel p-o">@include('tasks._objs', ['ob' => $ob, 'manage' => $mode === 'manage'])</div>@endif
   <div class="tpanel p-a">
