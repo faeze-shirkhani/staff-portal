@@ -8,8 +8,8 @@
   $period = ($jm ? Fa::MONTHS[$jm - 1] . ' ' : 'کل سال ') . Fa::num($jy);
   $endLbl = $jm ? 'پایان ماه' : 'پایان سال';
 @endphp
-<form method="get" action="/tasks/report" class="card noprint" onchange="this.submit()">
-<div class="fl3">
+<form method="get" action="/tasks/report" class="card noprint">
+  <div class="fl3">
     <div><label>ماه</label>
       <select name="jm"><option value="0" @selected($jm == 0)>همه (کل سال)</option>@foreach (Fa::MONTHS as $i => $mn)<option value="{{ $i + 1 }}" @selected($jm == $i + 1)>{{ $mn }}</option>@endforeach</select></div>
     <div><label>سال</label><input name="jy" type="number" value="{{ $jy }}"></div>
@@ -28,7 +28,7 @@
 
 <div class="rep">
   <div class="rhead">
-    <div class="rt">{{ $mode === 'all' ? 'گزارش همه‌ی تسک‌ها' : 'گزارش تسک‌ها و تذکرها' }}</div>
+    <div class="rt">{{ $mode === 'all' ? 'گزارش همه‌ی تسک‌ها' : 'گزارش تذکرها' }}</div>
     <div class="rs">{{ $period }}@if ($section) · بخش {{ $sections[$section] }}@endif</div>
   </div>
   <div class="chips">
@@ -55,12 +55,13 @@
       </div>
 
       @if ($mode === 'all')
-       @foreach ($p['tasks'] as $t)
-  <div class="lrow col {{ $t['open'] ? 'tflag' : '' }}">
-    <div class="l1"><b>{{ $t['title'] }}</b></div>
-    <div class="sm">{{ $t['author'] ? 'نوشته‌ی ' . $t['author'] : 'نوشته‌ی خودش' }} · {{ Fa::dt($t['at']) }}</div>
-  </div>
-@endforeach
+        @foreach ($p['tasks'] as $t)
+          <div class="lrow trep {{ $t['open'] ? 'tflag' : '' }}">
+            <span class="t-t"><b>{{ $t['title'] }}</b></span>
+            <span class="t-a sm">{{ $t['author'] ?? 'خودش' }}</span>
+            <span class="t-d sm">{{ Fa::dt($t['at']) }}</span>
+          </div>
+        @endforeach
       @else
         @foreach ($p['flags'] as $f)
           <div class="lrow col">
@@ -74,7 +75,7 @@
   @empty
     <div class="sm" style="padding:0 14px 14px">{{ $mode === 'all' ? 'در این بازه تسکی ثبت نشده است.' : 'در این بازه تذکری ثبت نشده است.' }}</div>
   @endforelse
-    <div class="rfoot">تاریخ تهیه گزارش: {{ Fa::date(\App\Support\LeaveRules::today()) }}</div>
+  <div class="rfoot">تاریخ تهیه گزارش: {{ Fa::date(\App\Support\LeaveRules::today()) }}</div>
 </div>
 
 <script>
@@ -83,4 +84,4 @@
       el.addEventListener('change', function () { el.form.submit(); });
     });
 </script>
-@endsectionس
+@endsection
