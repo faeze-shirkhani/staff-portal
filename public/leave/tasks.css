@@ -90,3 +90,67 @@ details>summary{cursor:pointer}
   .stat-m{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
   .trow.has-flags::after{display:none}
 }
+.osheet{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.ohead,.orow>summary{display:grid;grid-template-columns:130px 160px 1fr 150px 44px;gap:12px;align-items:center;padding:10px 14px}
+.ohead{background:var(--bg);font-size:13px;color:var(--mut);font-weight:600}
+.orow{border-top:1px solid var(--bd)}
+.orow>summary{list-style:none;cursor:pointer;line-height:1.8}
+.orow>summary::-webkit-details-marker{display:none}
+.orow>summary:hover{background:var(--bg)}
+.c-ic{justify-self:center;position:relative;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd);border-radius:10px}
+.orow.pending .c-ic{border-color:var(--no)}
+.orow.pending .c-ic::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--no)}
+.orow[open] .c-ic{background:var(--navon)}
+.obody{padding:6px 14px 14px;background:var(--bg);border-top:1px dashed var(--bd);line-height:1.8}
+.obody textarea{margin:8px 0}
+@media(max-width:700px){.ohead{display:none}.orow>summary{grid-template-columns:1fr 44px}.c-name,.c-task,.c-body,.c-date{grid-column:1}.c-ic{grid-column:2;grid-row:1/5}}
+/* فیلتر تسک‌های من */
+
+
+/* نوشتن تسک */
+.aform .ah{margin:0 0 6px;font-size:17px}
+.atarget{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 4px}
+.atarget label{display:inline-flex;margin:0;padding:7px 16px;border:1px solid var(--bd);border-radius:99px;font-size:14px;color:var(--tx);background:var(--bg);cursor:pointer}
+.atarget label.on{background:var(--pri-s);border-color:var(--pri);color:var(--pri);font-weight:600}
+.atarget input{display:none}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.agrid .afull{grid-column:1/-1}
+.agrid [hidden]{display:none}
+.ahint{margin-top:10px;font-size:13px;color:var(--mut)}
+.osheet.a4 .ohead,.osheet.a4 .orow>summary{grid-template-columns:minmax(0,1fr) 190px 190px 44px}
+.a-title small{display:block;color:var(--mut);font-size:12.5px}
+.osheet .tlist-h{border-bottom:1px solid var(--bd)}
+.obody .btn.no{margin-top:8px}
+
+/* تذکر و اعتراض */
+.flagform{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:6px 0}
+.ff-h{font-weight:600;font-size:14px}
+.flagform textarea{margin:8px 0}
+.ff-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chipb{font:inherit;font-size:12.5px;padding:3px 11px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+.chipb:hover{border-color:var(--no);color:var(--no)}
+.ff-act{display:flex;gap:8px;align-items:center}
+.ff-act .btn{margin-top:0}
+.ff-act label.sbtn{margin:0}
+.sbtn.flagbtn{margin:0;color:var(--no);border-color:var(--no)}
+
+/* گزارش تسک */
+.lrow.trep{display:grid;grid-template-columns:minmax(0,1fr) 140px 200px;gap:12px;align-items:center;break-inside:avoid}
+
+@media(max-width:700px){
+  .agrid{grid-template-columns:1fr}
+  .osheet.a4 .ohead{display:none}
+  .osheet.a4 .orow>summary{grid-template-columns:1fr 44px}
+  .osheet.a4 .orow>summary>span{grid-column:1}
+  .osheet.a4 .c-ic{grid-column:2;grid-row:1/4}
+  .lrow.trep{grid-template-columns:1fr 130px}
+  .lrow.trep .t-a{display:none}
+}
+.thead.m4,.trow.m4{grid-template-columns:44px minmax(0,1fr) 130px 160px}
+.tact{display:flex;justify-content:flex-end}
+.tact form{margin:0}
+@media(max-width:700px){
+  .thead.m4{display:none}
+  .trow.m4{grid-template-columns:44px minmax(0,1fr)}
+  .trow.m4 .tact{grid-column:2;justify-content:flex-start}
+}
