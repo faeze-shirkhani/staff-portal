@@ -2,83 +2,113 @@
 @use('App\Support\Fa')
 @section('title', 'نوشتن تسک')
 @section('body')
-<form method="post" action="/tasks/assign" class="card">
+<form method="post" action="/tasks/assign" class="card aform">
   @csrf
-  <b>نوشتن تسک برای دیگران</b>
-  <label>برای چه کسی؟</label>
-  <select name="target" onchange="document.getElementById('bu').hidden=this.value!=='user';document.getElementById('bs').hidden=this.value!=='section'">
-    <option value="user">یک نفر</option>
-    <option value="section">یک بخش</option>
-    <option value="all">همه</option>
-  </select>
-  <div id="bu">
-    <label>نام</label>
-    <select name="user_id">
-      @foreach ($users as $x)<option value="{{ $x->id }}">{{ $x->name }}@if ($x->section) — {{ $sections[$x->section] ?? '' }}@endif</option>@endforeach
-    </select>
+  <h3 class="ah">✏️ تسک جدید</h3>
+  <div class="atarget" id="atarget">
+    <label class="on"><input type="radio" name="target" value="user" checked> یک نفر</label>
+    <label><input type="radio" name="target" value="section"> یک بخش</label>
+    <label><input type="radio" name="target" value="all"> همه</label>
   </div>
-  <div id="bs" hidden>
-    <label>بخش</label>
-    <select name="section">@foreach ($sections as $k => $v)<option value="{{ $k }}">{{ $v }}</option>@endforeach</select>
+  <div class="agrid">
+    <div id="bu">
+      <label>نام</label>
+      <select name="user_id">
+        @foreach ($users as $x)<option value="{{ $x->id }}">{{ $x->name }}@if ($x->section) — {{ $sections[$x->section] ?? '' }}@endif</option>@endforeach
+      </select>
+    </div>
+    <div id="bs" hidden>
+      <label>بخش</label>
+      <select name="section">@foreach ($sections as $k => $v)<option value="{{ $k }}">{{ $v }}</option>@endforeach</select>
+    </div>
+    <div class="afull"><label>عنوان تسک</label><input name="title" maxlength="200" required></div>
+    <div class="afull"><label>توضیح (اختیاری)</label><textarea name="note" rows="2" maxlength="1000"></textarea></div>
   </div>
-  <label>تسک</label>
-  <input name="title" maxlength="200" required>
-  <label>توضیح (اختیاری)</label>
-  <textarea name="note" rows="2" maxlength="1000"></textarea>
+  <div class="ahint" id="ahint"></div>
   <button class="btn">ثبت تسک</button>
-  <div class="sm">برای «بخش» یا «همه»، برای هر نفر یک تسک جداگانه ساخته می‌شود تا تذکر هر کس جدا باشد. کسانی که بعداً ثبت‌نام کنند هم این تسک را می‌گیرند.</div>
 </form>
 
-<h3>تسک‌های گروهی (همه و بخش‌ها)</h3>
-@forelse ($templates as $g)
-  <div class="card">
-    <b>{{ $g->title }}</b>
-    <span class="sm">· برای {{ $g->scope === 'all' ? 'همه' : 'بخش ' . ($sections[$g->section] ?? '') }} ({{ Fa::num($counts->get($g->id, 0)) }} نفر)</span>
-    @if ($g->note)<div class="sm">{!! nl2br(e($g->note)) !!}</div>@endif
-    <div class="sm">ثبت: {{ Fa::dt($g->created_at) }}</div>
-    <details style="margin-top:8px">
-      <summary class="btn gh">ویرایش برای همه</summary>
-      <form method="post" action="/tasks/assign/group/{{ $g->id }}/update">
-        @csrf
-        <label>عنوان</label>
-        <input name="title" maxlength="200" value="{{ $g->title }}" required>
-        <label>توضیح</label>
-        <textarea name="note" rows="2" maxlength="1000">{{ $g->note }}</textarea>
-        <button class="btn">ذخیره برای همه</button>
-      </form>
+<div class="osheet a4" style="margin-bottom:14px">
+  <div class="tlist-h"><div><h3 style="margin:0;font-size:17px">تسک‌های گروهی ({{ Fa::num($templates->count()) }})</h3><div class="sm">برای همه یا یک بخش</div></div></div>
+  @if ($templates->count())
+    <div class="ohead"><span>تسک</span><span>برای</span><span>تاریخ ثبت</span><span></span></div>
+  @endif
+  @forelse ($templates as $g)
+    <details class="orow">
+      <summary>
+        <span class="a-title"><b>{{ $g->title }}</b>@if ($g->note)<small>{{ \Illuminate\Support\Str::limit($g->note, 80) }}</small>@endif</span>
+        <span><span class="pill neutral">{{ $g->scope === 'all' ? 'همه' : 'بخش ' . ($sections[$g->section] ?? '') }}</span> <span class="sm">{{ Fa::num($counts->get($g->id, 0)) }} نفر</span></span>
+        <span class="sm">{{ Fa::dt($g->created_at) }}</span>
+        <span class="c-ic" title="ویرایش">✏️</span>
+      </summary>
+      <div class="obody">
+        <form method="post" action="/tasks/assign/group/{{ $g->id }}/update">
+          @csrf
+          <label>عنوان</label>
+          <input name="title" maxlength="200" value="{{ $g->title }}" required>
+          <label>توضیح</label>
+          <textarea name="note" rows="2" maxlength="1000">{{ $g->note }}</textarea>
+          <button class="btn">ذخیره برای همه</button>
+        </form>
+        <form method="post" action="/tasks/assign/group/{{ $g->id }}/delete" class="inl" onsubmit="return confirm('این تسک برای همه حذف شود؟')">
+          @csrf
+          <button class="btn no">حذف برای همه</button>
+        </form>
+      </div>
     </details>
-    <form method="post" action="/tasks/assign/group/{{ $g->id }}/delete" class="inl" onsubmit="return confirm('این تسک برای همه حذف شود؟')">
-      @csrf
-      <button class="btn no">حذف برای همه</button>
-    </form>
-  </div>
-@empty
-  <div class="sm">تسک گروهی ثبت نشده است.</div>
-@endforelse
+  @empty
+    <div class="empty">تسک گروهی ثبت نشده است.</div>
+  @endforelse
+</div>
 
-<h3>تسک‌هایی که برای یک نفر نوشته‌ام</h3>
-@forelse ($singles as $t)
-  <div class="card">
-    <b>{{ $t->title }}</b> <span class="sm">· {{ $t->uname }}</span>
-    @if ($t->note)<div class="sm">{!! nl2br(e($t->note)) !!}</div>@endif
-    <div class="sm">ثبت: {{ Fa::dt($t->created_at) }}</div>
-    <details style="margin-top:8px">
-      <summary class="btn gh">ویرایش</summary>
-      <form method="post" action="/tasks/assign/{{ $t->id }}/update">
-        @csrf
-        <label>عنوان</label>
-        <input name="title" maxlength="200" value="{{ $t->title }}" required>
-        <label>توضیح</label>
-        <textarea name="note" rows="2" maxlength="1000">{{ $t->note }}</textarea>
-        <button class="btn">ذخیره</button>
-      </form>
+<div class="osheet a4">
+  <div class="tlist-h"><div><h3 style="margin:0;font-size:17px">تسک‌هایی که برای یک نفر نوشته‌ام ({{ Fa::num($singles->count()) }})</h3></div></div>
+  @if ($singles->count())
+    <div class="ohead"><span>تسک</span><span>برای</span><span>تاریخ ثبت</span><span></span></div>
+  @endif
+  @forelse ($singles as $t)
+    <details class="orow">
+      <summary>
+        <span class="a-title"><b>{{ $t->title }}</b>@if ($t->note)<small>{{ \Illuminate\Support\Str::limit($t->note, 80) }}</small>@endif</span>
+        <span><b>{{ $t->uname }}</b></span>
+        <span class="sm">{{ Fa::dt($t->created_at) }}</span>
+        <span class="c-ic" title="ویرایش">✏️</span>
+      </summary>
+      <div class="obody">
+        <form method="post" action="/tasks/assign/{{ $t->id }}/update">
+          @csrf
+          <label>عنوان</label>
+          <input name="title" maxlength="200" value="{{ $t->title }}" required>
+          <label>توضیح</label>
+          <textarea name="note" rows="2" maxlength="1000">{{ $t->note }}</textarea>
+          <button class="btn">ذخیره</button>
+        </form>
+        <form method="post" action="/tasks/assign/{{ $t->id }}/delete" class="inl" onsubmit="return confirm('این تسک حذف شود؟')">
+          @csrf
+          <button class="btn no">حذف</button>
+        </form>
+      </div>
     </details>
-    <form method="post" action="/tasks/assign/{{ $t->id }}/delete" class="inl" onsubmit="return confirm('این تسک حذف شود؟')">
-      @csrf
-      <button class="btn no">حذف</button>
-    </form>
-  </div>
-@empty
-  <div class="sm">تسک تکی ثبت نشده است.</div>
-@endforelse
+  @empty
+    <div class="empty">تسک تکی ثبت نشده است.</div>
+  @endforelse
+</div>
+
+<script>
+(function () {
+  var box = document.getElementById('atarget');
+  var hints = {
+    user: '',
+    section: 'برای هر نفرِ آن بخش یک تسک جداگانه ساخته می‌شود تا تذکر هر کس جدا باشد. کسانی که بعداً ثبت‌نام کنند هم این تسک را می‌گیرند.',
+    all: 'برای هر نفر یک تسک جداگانه ساخته می‌شود تا تذکر هر کس جدا باشد. کسانی که بعداً ثبت‌نام کنند هم این تسک را می‌گیرند.'
+  };
+  box.addEventListener('change', function () {
+    var v = box.querySelector('input:checked').value;
+    box.querySelectorAll('label').forEach(function (l) { l.classList.toggle('on', l.querySelector('input').checked); });
+    document.getElementById('bu').hidden = v !== 'user';
+    document.getElementById('bs').hidden = v !== 'section';
+    document.getElementById('ahint').textContent = hints[v];
+  });
+})();
+</script>
 @endsection
