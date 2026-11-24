@@ -6,7 +6,9 @@ async function rangeView() {
   <label>جست‌وجوی نام (اختیاری)</label><input id="q" placeholder="نام یا نام خانوادگی">
   <div class="acts"><button class="btn" id="go">نمایش گزارش</button><button class="btn gh" id="xl">دانلود اکسل</button><button class="btn gh" id="pr">چاپ / PDF</button></div>
   <div class="err" id="msg"></div></div><div id="rep"></div>`;
-  const pf = makePicker("از تاریخ"), pt = makePicker("تا تاریخ");
+  let ready = false;
+  const auto = () => { if (ready) withBusy($("#go"), load); };
+  const pf = makePicker("از تاریخ", auto), pt = makePicker("تا تاریخ", auto);
   $("#pf").append(pf.el); $("#pt").append(pt.el);
   const n = new Date(), t = g2j(new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate(), 12)));
   pf.set(iso(j2g(t[0], t[1], 1))); pt.set(iso(j2g(t[0], t[1], jDim(t[0], t[1]))));
@@ -31,5 +33,9 @@ async function rangeView() {
   $("#go").onclick = () => withBusy($("#go"), load);
   $("#xl").onclick = () => { if (check()) location.href = "/x/report/leaves.xlsx?" + qs(); };
   $("#pr").onclick = () => window.print();
+  $("#sec").onchange = auto;
+  $("#stt").onchange = auto;
+  let qt; $("#q").oninput = () => { clearTimeout(qt); qt = setTimeout(auto, 300); };
   await load();
+  ready = true;
 }

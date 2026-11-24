@@ -42,6 +42,8 @@ class TaskReportController extends Controller
             $row = ['title' => $f->title, 'note' => $f->note, 'by' => $f->bname, 'at' => $f->created_at,
                 'resolved_at' => $f->resolved_at, 'open' => $stillOpen];
             if ($mode === 'flags') {
+    if (!$stillOpen) continue;   // تذکرهای رفع‌شده را نیاور
+    $people[$f->uid] ??= ['name' => $f->uname, 'section' => $f->section, 'open' => 0, 'flags' => []];
                 $people[$f->uid] ??= ['name' => $f->uname, 'section' => $f->section, 'open' => 0, 'flags' => []];
                 $people[$f->uid]['flags'][] = $row;
                 if ($stillOpen) { $people[$f->uid]['open']++; $open++; }

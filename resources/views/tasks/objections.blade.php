@@ -2,6 +2,7 @@
 @use('App\Support\Fa')
 @section('title', 'اعتراض‌ها')
 @section('body')
+<div class="sm" style="margin-bottom:10px">اعتراض‌هایی که کارمندان به تسک‌های خود نوشته‌اند. بی‌پاسخ‌ها اول می‌آیند.</div>
 @forelse ($rows as $o)
   <div class="card">
     <b>{{ $o->uname }}</b> <span class="sm">· تسک: {{ $o->title }}</span>

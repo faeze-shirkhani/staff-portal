@@ -65,6 +65,7 @@ class TaskController extends Controller
     {
         $t = DB::table('tasks')->where('id', (int)$id)->where('user_id', Auth::id())->where('created_by', Auth::id())->whereNotNull('deleted_at')->first();
         if (!$t) return back()->with('err', 'این تسک پیدا نشد.');
+        if ($t->created_by == $t->user_id) return back()->with('err', 'این تسک را خودتان نوشته‌اید و اعتراض ندارد.');
         DB::table('tasks')->where('id', $t->id)->update(['deleted_at' => null, 'updated_at' => now()]);
         A::log($t->id, 'restored', $t->title);
         return back()->with('msg', 'تسک دوباره فعال شد.');

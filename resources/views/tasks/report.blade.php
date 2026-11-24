@@ -8,8 +8,8 @@
   $period = ($jm ? Fa::MONTHS[$jm - 1] . ' ' : 'کل سال ') . Fa::num($jy);
   $endLbl = $jm ? 'پایان ماه' : 'پایان سال';
 @endphp
-<form method="get" action="/tasks/report" class="card noprint">
-  <div class="fl3">
+<form method="get" action="/tasks/report" class="card noprint" onchange="this.submit()">
+<div class="fl3">
     <div><label>ماه</label>
       <select name="jm"><option value="0" @selected($jm == 0)>همه (کل سال)</option>@foreach (Fa::MONTHS as $i => $mn)<option value="{{ $i + 1 }}" @selected($jm == $i + 1)>{{ $mn }}</option>@endforeach</select></div>
     <div><label>سال</label><input name="jy" type="number" value="{{ $jy }}"></div>
@@ -55,22 +55,12 @@
       </div>
 
       @if ($mode === 'all')
-        @foreach ($p['tasks'] as $t)
-          <div class="lrow col">
-            <div class="l1"><b>{{ $t['title'] }}</b>
-              @if ($t['open'])<span class="pill redo">{{ Fa::num($t['open']) }} تذکر باز</span>
-              @elseif ($t['flags'])<span class="pill ok">تذکر رفع شد</span>
-              @else<span class="pill neutral">بدون تذکر</span>@endif
-            </div>
-            <div class="sm">{{ $t['author'] ? 'نوشته‌ی ' . $t['author'] : 'نوشته‌ی خودش' }} · {{ Fa::dt($t['at']) }}</div>
-            @foreach ($t['flags'] as $f)
-              <div class="fnote {{ $f['open'] ? 'o' : '' }}">
-                <div>{!! nl2br(e($f['note'])) !!}</div>
-                <div class="sm">{{ $f['by'] }} · {{ Fa::dt($f['at']) }}@if ($f['resolved_at']) · رفع: {{ Fa::dt($f['resolved_at']) }}@endif</div>
-              </div>
-            @endforeach
-          </div>
-        @endforeach
+       @foreach ($p['tasks'] as $t)
+  <div class="lrow col {{ $t['open'] ? 'tflag' : '' }}">
+    <div class="l1"><b>{{ $t['title'] }}</b></div>
+    <div class="sm">{{ $t['author'] ? 'نوشته‌ی ' . $t['author'] : 'نوشته‌ی خودش' }} · {{ Fa::dt($t['at']) }}</div>
+  </div>
+@endforeach
       @else
         @foreach ($p['flags'] as $f)
           <div class="lrow col">
@@ -84,6 +74,13 @@
   @empty
     <div class="sm" style="padding:0 14px 14px">{{ $mode === 'all' ? 'در این بازه تسکی ثبت نشده است.' : 'در این بازه تذکری ثبت نشده است.' }}</div>
   @endforelse
-  <div class="rfoot">تاریخ تهیه گزارش: {{ Fa::date(\App\Support\LeaveRules::today()) }}</div>
+    <div class="rfoot">تاریخ تهیه گزارش: {{ Fa::date(\App\Support\LeaveRules::today()) }}</div>
 </div>
-@endsection
+
+<script>
+  document.querySelectorAll('form[action="/tasks/report"] select, form[action="/tasks/report"] input')
+    .forEach(function (el) {
+      el.addEventListener('change', function () { el.form.submit(); });
+    });
+</script>
+@endsectionس

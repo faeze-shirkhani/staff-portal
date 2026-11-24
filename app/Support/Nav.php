@@ -20,7 +20,7 @@ class Nav
         $tasks = [['id' => 't-my', 'label' => 'تسک‌های من', 'icon' => '🎯', 'href' => '/tasks', 'path' => 'tasks']];
         if (TaskAccess::canAssign($u) && class_exists(\App\Http\Controllers\TaskManageController::class)) {
             $tasks[] = ['id' => 't-assign', 'label' => 'نوشتن تسک', 'icon' => '✏️', 'href' => '/tasks/assign', 'path' => 'tasks/assign'];
-            $tasks[] = ['id' => 't-team', 'label' => 'افراد و تذکر', 'icon' => '🚩', 'href' => '/tasks/team', 'path' => 'tasks/team*'];
+            $tasks[] = ['id' => 't-team', 'label' => 'تذکر دادن', 'icon' => '🚩', 'href' => '/tasks/team', 'path' => 'tasks/team*'];
             $tasks[] = ['id' => 't-obj', 'label' => 'اعتراض‌ها', 'icon' => '💬', 'href' => '/tasks/objections', 'path' => 'tasks/objections',
                 'badge' => TaskAccess::unreplied($u)];
         }

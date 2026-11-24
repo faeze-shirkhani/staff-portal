@@ -2,6 +2,7 @@
 @use('App\Support\Fa')
 @section('title', 'افراد و تذکر')
 @section('body')
+<div class="sm" style="margin-bottom:10px">یک نفر را انتخاب کنید تا تسک‌هایش را ببینید و برای آن‌ها تذکر بدهید. نشان‌ها: «تذکر باز» یعنی تذکری که هنوز برداشته نشده؛ «اعتراض بی‌پاسخ» یعنی کارمند اعتراض کرده و هنوز جواب نگرفته.</div>
 <form method="get" action="/tasks/team" class="card">
   <label>جست‌وجوی نام</label>
   <input name="q" value="{{ $q }}" placeholder="نام یا نام خانوادگی">
