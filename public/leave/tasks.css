@@ -1,31 +1,35 @@
 /* صفحه‌های تسک */
-.notice{background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.35);border-radius:14px;font-size:13px;line-height:2}
-.notice b{color:var(--pri);font-size:14px}
-.notice ul{margin:6px 0 0;padding-inline-start:20px}
+.notice{border-color:var(--wa);padding:14px 18px}
+.notice .n-sec b{display:block;color:var(--wa);margin-bottom:2px;font-size:14px}
+.notice .n-sec p{margin:0;font-size:13.5px;font-weight:400;line-height:2;color:var(--tx);opacity:.9}
+.notice .n-sec.guide{margin-top:12px;padding-top:12px;border-top:1px dashed var(--bd)}
+.notice .n-sec.guide b{color:var(--pri)}
 .inl{display:inline}
 details>summary{cursor:pointer}
 
 /* فهرست تسک‌ها، شبیه جدول نمونه */
 .tlist{background:var(--card);border:1px solid var(--bd);border-radius:16px;margin-bottom:14px}
 .tlist-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 18px}
-.tlist-h h3{margin:0;font-size:17px}
+.tlist-h h3{margin:0;font-size:15.5px}
 .tsearch{max-width:240px;padding:8px 12px}
 .empty{padding:20px 18px;color:var(--mut);font-size:15px;border-top:1px solid var(--bd)}
-.thead,.trow{display:grid;grid-template-columns:44px minmax(0,1fr) 130px 130px 40px;gap:8px 14px;align-items:center;padding-left:18px;padding-right:18px}
+.thead,.trow{display:grid;grid-template-columns:minmax(0,1fr) 130px 130px 40px;gap:8px 14px;align-items:center;padding-left:18px;padding-right:18px}
+.thead>span:first-child:empty{display:none}
 .thead{padding-top:10px;padding-bottom:10px;font-size:13px;color:var(--mut);background:var(--bg);border-top:1px solid var(--bd)}
 .trow{padding-top:14px;padding-bottom:14px;border-top:1px solid var(--bd)}
 .trow:last-child{border-radius:0 0 16px 16px}
 .trow.red{background:rgba(224,60,49,.07);box-shadow:inset 0 0 0 1px var(--no),inset -4px 0 0 var(--no)}
 .tav{width:44px;height:44px;border-radius:12px;background:var(--navon);color:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:0 0 44px}
-.tav.sm{width:32px;height:32px;flex-basis:32px;border-radius:10px;font-size:13px}
+.tav.sm{width:32px;height:32px;flex-basis:32px;border-radius:10px;font-size:12px}
 .trow.red .tav{background:rgba(224,60,49,.16);color:var(--no)}
-.ttitle{font-weight:600;font-size:15.5px;line-height:1.6}
+.ttitle{font-weight:600;font-size:14px;line-height:1.6}
 .tmeta{font-size:13px;color:var(--mut)}
 .tnote{font-size:14px;color:var(--mut);margin-top:4px;line-height:1.8}
-.tdate{font-size:14px}.tdate small{display:block;font-size:12px;color:var(--mut)}
+.tdate{font-size:12px}.tdate small{display:block;font-size:12px;color:var(--mut)}
 .tdate-m,.stat-m{display:none}
-.tstatus{display:flex;flex-wrap:wrap;gap:4px}
-.pill{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.8;border-radius:99px;padding:0 10px;border:1px solid currentColor}
+.tstatus{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.tstatus .pill{min-width:92px;text-align:center;white-space:nowrap}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;line-height:1.8;border-radius:99px;padding:0 10px;border:1px solid currentColor}
 .pill.red{background:var(--no);border-color:var(--no);color:#fff}
 .pill.redo{color:var(--no)}
 .pill.ok{color:var(--ok)}
@@ -41,7 +45,7 @@ details>summary{cursor:pointer}
 .dots:hover,.dd[open] .dots{background:var(--bg);color:var(--tx)}
 .ddmenu{position:absolute;left:0;top:calc(100% + 4px);z-index:8;min-width:200px;background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 10px 28px #0005;padding:6px}
 .ddmenu form{margin:0}
-.ddmenu label,.ddmenu button{display:block;width:100%;text-align:right;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;font-size:14px;color:var(--tx);cursor:pointer}
+.ddmenu label,.ddmenu button{display:block;width:100%;text-align:right;padding:9px 12px;border:0;border-radius:8px;background:none;font:inherit;font-size:13px;color:var(--tx);cursor:pointer}
 .ddmenu .dis{display:block;padding:9px 12px;font-size:14px;color:var(--mut);opacity:.5;cursor:not-allowed}
 .ddmenu label:hover,.ddmenu button:hover{background:var(--bg)}
 .ddmenu .danger{color:var(--no)}
@@ -85,7 +89,7 @@ details>summary{cursor:pointer}
 .irow form{margin:0}
 @media(max-width:700px){
   .thead{display:none}
-  .thead,.trow{grid-template-columns:44px minmax(0,1fr) 40px}
+  .thead,.trow{grid-template-columns:minmax(0,1fr) 40px}
   .tstatus,.tdate{display:none}
   .tdate-m{display:inline}
   .stat-m{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
@@ -147,11 +151,47 @@ details>summary{cursor:pointer}
   .lrow.trep{grid-template-columns:1fr 130px}
   .lrow.trep .t-a{display:none}
 }
-.thead.m4,.trow.m4{grid-template-columns:44px minmax(0,1fr) 130px 160px}
+.thead.m4,.trow.m4{grid-template-columns:minmax(0,1fr) 130px 160px}
 .tact{display:flex;justify-content:flex-end}
 .tact form{margin:0}
 @media(max-width:700px){
   .thead.m4{display:none}
-  .trow.m4{grid-template-columns:44px minmax(0,1fr)}
-  .trow.m4 .tact{grid-column:2;justify-content:flex-start}
+  .trow.m4{grid-template-columns:minmax(0,1fr)}
+  .trow.m4 .tact{grid-column:1;justify-content:flex-start}
 }
+.trow>.tav{display:none}
+/* پنجره‌ی تأیید */
+.cfm-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;animation:cfmIn .12s ease-out}
+.cfm{width:100%;max-width:360px;background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:0 20px 50px #000a;padding:20px 20px 16px}
+.cfm-t{font-size:16px;font-weight:700;margin-bottom:6px}
+.cfm-m{font-size:14px;color:var(--mut);line-height:1.8}
+.cfm-a{display:flex;gap:8px;margin-top:18px}
+.cfm-a .btn{margin:0}
+@keyframes cfmIn{from{opacity:0}to{opacity:1}}
+
+
+/* چیدمان جدول تسک‌های من */
+.trow{min-height:76px}
+.tstatus{align-items:center}
+.tdate{white-space:nowrap}
+@media(min-width:701px){
+  .thead,.trow{grid-template-columns:minmax(0,1fr) 150px 120px 40px;column-gap:18px}
+  .thead:not(.m4)>span:nth-child(3),.thead:not(.m4)>span:nth-child(4){text-align:center}
+  .trow:not(.m4) .tstatus{align-items:center}
+  .trow:not(.m4) .tdate{text-align:center}
+}
+/* پاپ‌آپ راهنما */
+.ghelp{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-right:6px;padding:0;border-radius:50%;border:1px solid var(--bd);background:var(--bg);color:var(--pri);font:inherit;font-size:13px;font-weight:700;line-height:1;cursor:pointer;vertical-align:middle}
+.ghelp:hover{border-color:var(--pri)}
+.gdlg{width:min(440px,calc(100% - 32px));padding:0;border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);box-shadow:0 20px 50px #000a}
+.gdlg::backdrop{background:rgba(0,0,0,.55)}
+.gd{padding:18px 20px 16px}
+.gd-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.gd-h b{font-size:16px}
+.gd-x{width:28px;height:28px;border:0;border-radius:50%;background:none;color:var(--mut);cursor:pointer;font-size:14px}
+.gd-x:hover{background:var(--bg);color:var(--no)}
+.gd ul{margin:0;padding:0 18px 0 0;font-size:14px;line-height:2;color:var(--mut)}
+.gd li::marker{color:var(--pri)}
+.gd-f{margin-top:14px}
+.gd-f .btn{margin:0;width:100%}
+.notice .n-sec p+p{margin-top:6px}

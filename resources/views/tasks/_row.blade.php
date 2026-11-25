@@ -15,8 +15,6 @@
   <input type="checkbox" class="tg c-e" id="e{{ $t->id }}" hidden>
   <input type="checkbox" class="tg c-o" id="o{{ $t->id }}" hidden>
 
-  <div class="tav">{{ mb_substr($t->title, 0, 1) }}</div>
-
   <div class="tmain">
     <div class="ttitle">{{ $t->title }}</div>
     <div class="tmeta">@if (!$own)نوشته‌ی {{ $t->author }}@else نوشته‌ی خودم@endif<span class="tdate-m"> · {{ Fa::dt($t->created_at) }}</span></div>

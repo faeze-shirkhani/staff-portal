@@ -65,7 +65,6 @@ class TaskController extends Controller
     {
         $t = DB::table('tasks')->where('id', (int)$id)->where('user_id', Auth::id())->where('created_by', Auth::id())->whereNotNull('deleted_at')->first();
         if (!$t) return back()->with('err', 'این تسک پیدا نشد.');
-        if ($t->created_by == $t->user_id) return back()->with('err', 'این تسک را خودتان نوشته‌اید و اعتراض ندارد.');
         DB::table('tasks')->where('id', $t->id)->update(['deleted_at' => null, 'updated_at' => now()]);
         A::log($t->id, 'restored', $t->title);
         return back()->with('msg', 'تسک دوباره فعال شد.');
@@ -75,6 +74,7 @@ class TaskController extends Controller
     {
         $t = $this->mine($id);
         if (!$t) return back()->with('err', 'تسک پیدا نشد.');
+        if ($t->created_by == $t->user_id) return back()->with('err', 'این تسک را خودتان نوشته‌اید و اعتراض ندارد.');
         $body = A::clean($r->input('body'), 1000);
         if (mb_strlen($body) < 3) return back()->with('err', 'توضیح اعتراض خود را بنویسید.');
         DB::table('task_objections')->insert(['task_id' => $t->id, 'user_id' => Auth::id(), 'body' => $body, 'created_at' => now()]);

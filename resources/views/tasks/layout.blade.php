@@ -44,5 +44,38 @@ document.addEventListener('click', function (e) {
   });
 })();
 
+/* پنجره‌ی تأیید به‌جای confirm مرورگر */
+(function () {
+  document.querySelectorAll('form[onsubmit*="confirm("]').forEach(function (f) {
+    var m = /confirm\((['"])([\s\S]*?)\1\)/.exec(f.getAttribute('onsubmit') || '');
+    if (!m) return;
+    f.dataset.confirm = m[2];
+    f.removeAttribute('onsubmit');
+  });
+
+  function ask(msg, danger, ok) {
+    var bg = document.createElement('div');
+    bg.className = 'cfm-bg';
+    bg.innerHTML = '<div class="cfm" role="dialog" aria-modal="true"><div class="cfm-t">آیا مطمئن هستید؟</div><div class="cfm-m"></div>' +
+      '<div class="cfm-a"><button type="button" class="btn ' + (danger ? 'no' : '') + '" data-y>تأیید</button>' +
+      '<button type="button" class="btn gh" data-n>انصراف</button></div></div>';
+    bg.querySelector('.cfm-m').textContent = msg;
+    function key(e) { if (e.key === 'Escape') close(); }
+    function close() { document.removeEventListener('keydown', key); bg.remove(); }
+    bg.addEventListener('click', function (e) { if (e.target === bg || e.target.closest('[data-n]')) close(); });
+    bg.querySelector('[data-y]').addEventListener('click', function () { close(); ok(); });
+    document.addEventListener('keydown', key);
+    document.body.appendChild(bg);
+    bg.querySelector('[data-y]').focus();
+  }
+
+  document.addEventListener('submit', function (e) {
+    var f = e.target, msg = f.dataset && f.dataset.confirm;
+    if (!msg) return;
+    e.preventDefault();
+    ask(msg, /غیرفعال|حذف/.test(msg), function () { f.submit(); });
+  }, true);
+})();
+
 </script>
 @endpush
