@@ -27,11 +27,19 @@ document.addEventListener('click', function (e) {
     if (store[location.pathname + '#' + r.dataset.id]) r.classList.add('open-flags');
   });
 
-  document.addEventListener('click', function (e) {
+   document.addEventListener('click', function (e) {
     var row = e.target.closest('.trow.has-flags');
     if (!row || e.target.closest('.dd, .tflags, .tpanel, form, button, a, label, input, textarea')) return;
-    var on = row.classList.toggle('open-flags'), k = location.pathname + '#' + row.dataset.id;
-    if (on) store[k] = 1; else delete store[k];
+    var co = row.querySelector('.c-o'), k = location.pathname + '#' + row.dataset.id;
+    var isOpen = row.classList.contains('open-flags') || (co && co.checked);
+    if (isOpen) {                                   // بستن: همه‌چیز (تذکرها و اعتراض‌ها)
+      row.classList.remove('open-flags');
+      if (co) co.checked = false;
+      delete store[k];
+    } else {                                        // باز کردن
+      row.classList.add('open-flags');
+      store[k] = 1;
+    }
     save();
   });
 })();

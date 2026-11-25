@@ -1,6 +1,7 @@
 /* صفحه‌های تسک */
-.notice{border-color:var(--wa)}
-.notice b{color:var(--wa)}
+.notice{background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.35);border-radius:14px;font-size:13px;line-height:2}
+.notice b{color:var(--pri);font-size:14px}
+.notice ul{margin:6px 0 0;padding-inline-start:20px}
 .inl{display:inline}
 details>summary{cursor:pointer}
 

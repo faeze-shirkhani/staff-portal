@@ -56,7 +56,6 @@
         @else
           <label for="a{{ $t->id }}">اعتراض یا توضیح</label>
         @endif
-        @if ($ob->count())<label for="o{{ $t->id }}">دیدن اعتراض‌ها ({{ Fa::num($ob->count()) }})</label>@endif
         @if ($own)
           <label for="e{{ $t->id }}">ویرایش</label>
           @if ($fl->isEmpty())
