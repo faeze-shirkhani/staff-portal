@@ -1,6 +1,6 @@
 /* قالب اصلی: منوی کناری + نوار بالا */
-:root{--navon:#ffe6de}
-@media(prefers-color-scheme:dark){:root{--navon:#3d2017}}
+:root{--navon:#e6edff}
+@media(prefers-color-scheme:dark){:root{--navon:#22304f}}
 .shell{display:flex;min-height:100vh}
 .side{width:268px;flex:0 0 268px;background:var(--card);border-left:1px solid var(--bd);padding:16px 12px;display:flex;flex-direction:column;gap:12px;position:sticky;top:0;height:100vh;overflow-y:auto}
 .brand{display:flex;align-items:center;gap:10px;padding:4px 6px 10px;border-bottom:1px solid var(--bd)}

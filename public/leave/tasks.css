@@ -195,3 +195,9 @@ details>summary{cursor:pointer}
 .gd-f{margin-top:14px}
 .gd-f .btn{margin:0;width:100%}
 .notice .n-sec p+p{margin-top:6px}
+/* صفحه‌ی ورود */
+.a-t{font-size:17px;font-weight:700;margin-bottom:4px}
+.a-go{width:100%;margin-top:16px}
+.a-sw{margin-top:14px;text-align:center;font-size:13.5px;color:var(--mut)}
+.a-sw a{color:var(--pri);font-weight:600;text-decoration:none}
+.a-sw a:hover{text-decoration:underline}

@@ -1,6 +1,7 @@
 @extends('layouts.shell')
 @section('title', 'مرخصی')
 @section('content')
+@auth
 <div class="card notice">
   <div class="n-sec">
     <b>توجه</b>
@@ -9,6 +10,7 @@
     <p>در صورتی که درخواست مرخصی شما تأیید نشد، لطفاً موضوع را مستقیماً با مدیریت پیگیری نمایید.</p>
   </div>
 </div>
+@endauth
 <div id="app"></div>
 @endsection
 @push('scripts')

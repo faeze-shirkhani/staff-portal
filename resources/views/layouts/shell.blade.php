@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>@yield('title', 'سامانه') | سامانه پرسنل</title>
+<title>@yield('title', 'سامانه') | اتوماسیون هیوا سام پارت</title>
 @foreach (['style', 'report', 'tasks', 'shell'] as $css)
 <link rel="stylesheet" href="/leave/{{ $css }}.css?v={{ filemtime(public_path("leave/$css.css")) }}">
 @endforeach
@@ -18,7 +18,7 @@
     <aside class="side" id="side">
       <div class="brand">
         <span class="logo">👥</span>
-        <div><b>سامانه پرسنل</b><div class="sm">مرخصی و تسک‌ها</div></div>
+        <div><b>اتوماسیون هیوا سام پارت</b><div class="sm">مرخصی و تسک‌ها</div></div>
       </div>
       <div class="usercard">
         <span class="av">{{ mb_substr($u->name, 0, 1) }}</span>
